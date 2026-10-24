@@ -52,12 +52,12 @@ function pick(){ // zayıf kelimeler daha sık gelir
 const shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
 function stats(){const k=W.concat(S).filter(w=>lv(w)>=3).length,N=W.length+S.length;
   document.getElementById("stats").innerHTML=`⭐ Öğrenilen: <b>${k}/${N}</b> · 🏅 Seviye <b>${Math.floor(X/100)+1}</b> · ✨ ${X} puan · 🔥 ${streak}<div class="bar"><i style="width:${k/N*100}%"></i></div>`}
-const modes={learn:"📇 Öğren",quiz:"🖼️ Resimden Bul",listen:"👂 Dinle Bul",spell:"🔤 Harfleri Diz",learnS:"💬 Cümle Öğren",quizS:"🗣️ Cümle Bul",order:"🧩 Cümleyi Diz"};
+const modes={learn:"📇 Öğren",quiz:"🖼️ Resimden Bul",listen:"👂 Dinle Bul",spell:"🔤 Harfleri Diz",learnS:"💬 Cümle Öğren",quizS:"🗣️ Cümle Bul",order:"🧩 Cümleyi Diz",numL:"🔢 Sayı Öğren",numQ:"🎯 Sayı Bul",numO:"✏️ Sayıyı Yaz"};
 let mode="learn",cur=null,idx=0;
 function tabs(){const t=document.getElementById("tabs");t.innerHTML="";
   for(const m in modes){const b=document.createElement("button");b.textContent=modes[m];b.className=m==mode?"on":"";b.onclick=()=>{mode=m;tabs();next()};t.append(b)}}
 function next(){const m=document.getElementById("main");
-  if(mode=="learn")return learn(m);if(mode=="learnS")return learnS(m);if(mode=="quizS"||mode=="order"){let v;do{v=pickS()}while(v===cur);cur=v;return mode=="order"?order(m,v):quizS(m,v)}
+  if(mode=="learn")return learn(m);if(mode=="learnS")return learnS(m);if(mode=='numL')return numL(m);if(mode=='numQ')return numQ(m);if(mode=='numO')return numO(m);if(mode=="quizS"||mode=="order"){let v;do{v=pickS()}while(v===cur);cur=v;return mode=="order"?order(m,v):quizS(m,v)}
   let w;do{w=pick()}while(w===cur&&W.length>1);cur=w;
   ({quiz,listen,spell})[mode](m,w)}
 function learn(m){const w=W[idx%W.length];cur=w;
@@ -91,6 +91,15 @@ function spell(m,w){const L=w[0].toUpperCase().split("");let pos=0;
         if(pos==L.length){bump(w,miss==0);speak(w[0]);m.querySelector("#msg").textContent="🎉 Süper! "+w[0];setTimeout(next,1800)}}
       else{miss++;b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),300)}};
     T.append(b)})}
+const E=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'],ER=['zi-ro','van','tu','tri','for','fayv','siks','se-vın','eyt','nayn','ten','i-le-vın','tuelv','tör-tin','for-tin','fif-tin','siks-tin','se-vın-tin','ey-tin','nayn-tin'],TE=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'],TR=['','','tven-ti','tör-ti','for-ti','fif-ti','siks-ti','se-vın-ti','ey-ti','nayn-ti'];
+function nb(n,A,T,H,K,j){if(n==1000)return A[1]+' '+K;const s=[];if(n>=100){s.push(A[n/100|0],H);n%=100;if(n==0)return s.join(' ')}if(n<20)s.push(A[n]);else{let t=T[n/10|0];if(n%10)t+=j+A[n%10];s.push(t)}return s.join(' ')}
+const NI=Array.from({length:1001},(_,n)=>[nb(n,E,TE,'hundred','thousand','-'),''+n,nb(n,ER,TR,'han-drıd','tau-zınd',' ')]);
+let nCur=1,numMax=20;
+function rn(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function rng(){return '<div style="margin-bottom:8px">'+[20,100,1000].map(x=>`<button class='big ${x==numMax?'':'alt'}' style='padding:6px 12px;font-size:15px' onclick='numMax=${x};next()'>0-${x}</button>`).join('')+'</div>'}
+function numL(m){const n=nCur,w=NI[n];cur=w;m.innerHTML=`<div class='emoji' style='font-size:72px'>${n}</div><div class='en' style='font-size:34px'>${w[0]}</div><div class='ok'>okunuş: ${w[2]}</div><div style='margin:10px'><input id='ni' type='number' min='0' max='1000' placeholder='0-1000' style='font:inherit;font-size:18px;width:110px;padding:8px;border-radius:10px;border:2px solid var(--pri);background:var(--card);color:var(--ink)'> <button class='big alt' id='g'>Git</button></div><button class='big' id='s'>🔊 Dinle</button><br><button class='big alt' id='p'>◀</button><button class='big alt' id='r'>🎲</button><button class='big' id='n'>Sonraki ▶</button>`;m.querySelector('#s').onclick=()=>speak(w[0]);m.querySelector('#n').onclick=()=>{nCur=(n+1)%1001;numL(m)};m.querySelector('#p').onclick=()=>{nCur=(n+1000)%1001;numL(m)};m.querySelector('#r').onclick=()=>{nCur=rn(0,1000);numL(m)};m.querySelector('#g').onclick=()=>{const v=parseInt(m.querySelector('#ni').value);if(v>=0&&v<=1000){nCur=v;numL(m)}};speak(w[0])}
+function numQ(m){let n;do{n=rn(0,numMax)}while(NI[n]===cur);const w=NI[n];cur=w;const L=NI.slice(Math.max(0,n-8),Math.min(numMax,n+8)+1);if(Math.random()<.5){ask(m,w,rng()+`<div class='emoji' style='font-size:72px'>${n}</div><div class='tr'>İngilizcesi hangisi?</div>`,0,c=>c[0],L);m.querySelector('.opts').classList.add('long')}else{ask(m,w,rng()+`<button class='big' id='s'>🔊 Dinle</button><div class='tr'>Duyduğun sayıyı seç</div>`,0,c=>c[1],L);m.querySelector('#s').onclick=()=>speak(w[0]);setTimeout(()=>speak(w[0]),300)}}
+function numO(m){const big=numMax==1000,n=big?rn(100,1000):rn(0,numMax),w=NI[n];cur=w;if(big)order(m,w);else spell(m,[w[0],w[1],w[1]]);m.insertAdjacentHTML('afterbegin',rng())}
 let idxS=0;
 function pickS(){const pool=[];S.forEach(w=>{for(let i=0;i<4-lv(w);i++)pool.push(w)});return pool[Math.random()*pool.length|0]}
 function learnS(m){const w=S[idxS%S.length];cur=w;m.innerHTML=`<div class="emoji">💬</div><div class="en" style="font-size:28px">${w[0]}</div><div class="ok">okunuş: ${w[2]}</div><div class="tr">${w[1]}</div><button class="big" id="s">🔊 Dinle</button><br><button class="big alt" id="p">◀</button><button class="big" id="n">Sonraki ▶</button>`;m.querySelector('#s').onclick=()=>speak(w[0]);m.querySelector('#n').onclick=()=>{idxS++;learnS(m)};m.querySelector('#p').onclick=()=>{idxS=(idxS+S.length-1)%S.length;learnS(m)};speak(w[0])}
