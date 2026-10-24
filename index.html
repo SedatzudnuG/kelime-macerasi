@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kelime Macerası</title>
+<style>
+:root{--bg:#fff7e6;--card:#fff;--ink:#2b2250;--pri:#7c4dff;--ok:#2eb872;--bad:#ef5350;--soft:#efe7ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1838;--card:#2a2350;--ink:#f3eeff;--soft:#3a3170}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Comic Sans MS",Verdana,sans-serif;min-height:100vh}
+.wrap{max-width:560px;margin:0 auto;padding:14px}
+h1{margin:4px 0 2px;font-size:26px;text-align:center}
+.stats{text-align:center;font-size:15px;margin-bottom:10px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.tabs button{flex:1 1 45%;padding:10px 6px;font:inherit;font-size:15px;border:2px solid var(--pri);background:var(--card);color:var(--ink);border-radius:14px;cursor:pointer}
+.tabs button.on{background:var(--pri);color:#fff}
+.card{background:var(--card);border-radius:22px;padding:20px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.emoji{font-size:84px;line-height:1.1}
+.en{font-size:44px;font-weight:bold;letter-spacing:2px;margin:6px 0}
+.tr{font-size:20px;opacity:.85}.ok{font-size:18px;color:var(--pri);font-weight:bold}
+button.big{font:inherit;font-size:18px;padding:12px 18px;margin:6px 4px;border:0;border-radius:14px;background:var(--pri);color:#fff;cursor:pointer}
+button.alt{background:var(--soft);color:var(--ink)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.opts button{font:inherit;font-size:22px;padding:16px 8px;border:3px solid var(--soft);background:var(--card);color:var(--ink);border-radius:16px;cursor:pointer}
+.opts button.right{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opts button.wrong{background:var(--bad);color:#fff;border-color:var(--bad)}
+.slots,.tiles{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.slot{width:44px;height:52px;border-bottom:4px solid var(--pri);font-size:30px;font-weight:bold}
+.tile{width:50px;height:54px;font:inherit;font-size:26px;font-weight:bold;border:0;border-radius:12px;background:var(--soft);color:var(--ink);cursor:pointer}
+.tile.used{visibility:hidden}.shake{animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opts.long button{font-size:16px}.msg{min-height:30px;font-size:22px;font-weight:bold;margin-top:8px}
+.bar{height:10px;background:var(--soft);border-radius:6px;margin-top:12px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
+</style></head><body><div class="wrap">
+<h1>🌈 Kelime Macerası</h1>
+<div class="stats" id="stats"></div>
+<div class="tabs" id="tabs"></div>
+<div class="card" id="main"></div>
+</div>
+<script>
+const W=[["cat","kedi","🐱","ket"],["dog","köpek","🐶","dog"],["apple","elma","🍎","epıl"],["book","kitap","📖","buk"],["sun","güneş","☀️","sın"],["moon","ay","🌙","mun"],["tree","ağaç","🌳","tri"],["fish","balık","🐟","fiş"],["bird","kuş","🐦","börd"],["milk","süt","🥛","milk"],["water","su","💧","vo-tır"],["house","ev","🏠","haus"],["car","araba","🚗","kar"],["ball","top","⚽","bol"],["flower","çiçek","🌸","flau-ır"],["banana","muz","🍌","bı-na-nı"],["red","kırmızı","🔴","red"],["blue","mavi","🔵","blu"],["heart","kalp","❤️","hart"],["star","yıldız","⭐","star"],["rabbit","tavşan","🐰","ra-bit"],["horse","at","🐴","hors"],["egg","yumurta","🥚","eg"],["bread","ekmek","🍞","bred"],["pizza","pizza","🍕","pit-sa"],["chair","sandalye","🪑","çer"],["bed","yatak","🛏️","bed"],["shoe","ayakkabı","👟","şu"],["hat","şapka","🎩","het"],["rain","yağmur","🌧️","reyn"],["lion","aslan","🦁","la-yın"],["elephant","fil","🐘","e-lı-fınt"],["monkey","maymun","🐵","mın-ki"],["duck","ördek","🦆","dak"],["cow","inek","🐮","kau"],["pig","domuz","🐷","pig"],["sheep","koyun","🐑","şip"],["frog","kurbağa","🐸","frog"],["bee","arı","🐝","bi"],["butterfly","kelebek","🦋","ba-tır-flay"],["snake","yılan","🐍","sneyk"],["turtle","kaplumbağa","🐢","tör-tıl"],["mouse","fare","🐭","maus"],["bear","ayı","🐻","ber"],["tiger","kaplan","🐯","tay-gır"],["strawberry","çilek","🍓","stro-be-ri"],["orange","portakal","🍊","o-rınç"],["grapes","üzüm","🍇","greyps"],["carrot","havuç","🥕","ke-rıt"],["cheese","peynir","🧀","çiz"],["cake","pasta","🍰","keyk"],["cookie","kurabiye","🍪","ku-ki"],["tomato","domates","🍅","tı-mey-to"],["potato","patates","🥔","pı-tey-to"],["lemon","limon","🍋","le-mın"],["watermelon","karpuz","🍉","vo-tır-me-lın"],["bus","otobüs","🚌","bas"],["train","tren","🚆","treyn"],["plane","uçak","✈️","pleyn"],["boat","tekne","⛵","bout"],["bike","bisiklet","🚲","bayk"],["clock","saat","🕒","klok"],["phone","telefon","📱","foun"],["key","anahtar","🔑","ki"],["door","kapı","🚪","dor"],["umbrella","şemsiye","☂️","am-bre-lı"],["gift","hediye","🎁","gift"],["balloon","balon","🎈","bı-lun"],["pencil","kalem","✏️","pen-sıl"],["scissors","makas","✂️","si-zırz"],["bag","çanta","🎒","beg"],["glasses","gözlük","👓","gla-sız"],["snow","kar","❄️","snou"],["fire","ateş","🔥","fa-yır"],["cloud","bulut","☁️","klaud"],["mountain","dağ","⛰️","maun-tın"],["green","yeşil","🟢","grin"],["yellow","sarı","🟡","ye-lou"],["black","siyah","⚫","blek"],["white","beyaz","⚪","vayt"],["hand","el","✋","hend"],["eye","göz","👁️","ay"],["nose","burun","👃","nouz"],["ear","kulak","👂","ir"]];
+const S=[[`What is your name?`,`Adın ne?`,`vat iz yor neym`],[`My name is Mia.`,`Benim adım Mia.`,`May neym iz Mia`],[`How old are you?`,`Kaç yaşındasın?`,`hau old ar yu`],[`I am eight years old.`,`Ben sekiz yaşındayım.`,`ay em eyt yirz old`],[`Where do you live?`,`Nerede yaşıyorsun?`,`ver du yu liv`],[`I live in Istanbul.`,`İstanbul'da yaşıyorum.`,`ay liv in ıs-tan-bul`],[`Where are you going?`,`Nereye gidiyorsun?`,`ver ar yu go-ing`],[`I am going to school.`,`Okula gidiyorum.`,`ay em go-ing tu skul`],[`What did you eat today?`,`Bugün ne yedin?`,`vat did yu it tu-dey`],[`I ate an apple.`,`Bir elma yedim.`,`ay eyt en epıl`],[`What do you want?`,`Ne istiyorsun?`,`vat du yu vont`],[`I want some water.`,`Biraz su istiyorum.`,`ay vont sam vo-tır`],[`How are you?`,`Nasılsın?`,`hau ar yu`],[`I am fine, thank you.`,`İyiyim, teşekkürler.`,`ay em fayn, tenk yu`],[`Good morning!`,`Günaydın!`,`gud mor-ning`],[`Good night!`,`İyi geceler!`,`gud nayt`],[`Thank you.`,`Teşekkür ederim.`,`tenk yu`],[`Please help me.`,`Lütfen bana yardım et.`,`pliz help mi`],[`I like cats.`,`Kedileri severim.`,`ay layk kets`],[`What is this?`,`Bu nedir?`,`vat iz dis`],[`This is my book.`,`Bu benim kitabım.`,`dis iz may buk`],[`I am hungry.`,`Acıktım.`,`ay em han-gri`],[`I am thirsty.`,`Susadım.`,`ay em tör-sti`],[`Can I go to the toilet?`,`Tuvalete gidebilir miyim?`,`ken ay go tu dı toy-lıt`],[`I love my family.`,`Ailemi seviyorum.`,`ay lav may fe-mı-li`],[`See you tomorrow!`,`Yarın görüşürüz!`,`si yu tı-mo-ro`]];
+let X=0,streak=0;try{X=+localStorage.kmX||0}catch(e){}
+function xp(g){if(g){streak++;X+=10+Math.min(streak,5)*2}else streak=0;try{localStorage.setItem('kmX',X)}catch(e){}}
+let P={};try{P=JSON.parse(localStorage.getItem("kmP")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("kmP",JSON.stringify(P))}catch(e){}};
+const lv=w=>P[w[0]]||0;
+function bump(w,good){xp(good);P[w[0]]=Math.max(0,Math.min(3,lv(w)+(good?1:-1)));save();stats()}
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.8;speechSynthesis.speak(u)}catch(e){}}
+function pick(){ // zayıf kelimeler daha sık gelir
+  const pool=[];W.forEach(w=>{for(let i=0;i<4-lv(w);i++)pool.push(w)});
+  return pool[Math.random()*pool.length|0]}
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+function stats(){const k=W.concat(S).filter(w=>lv(w)>=3).length,N=W.length+S.length;
+  document.getElementById("stats").innerHTML=`⭐ Öğrenilen: <b>${k}/${N}</b> · 🏅 Seviye <b>${Math.floor(X/100)+1}</b> · ✨ ${X} puan · 🔥 ${streak}<div class="bar"><i style="width:${k/N*100}%"></i></div>`}
+const modes={learn:"📇 Öğren",quiz:"🖼️ Resimden Bul",listen:"👂 Dinle Bul",spell:"🔤 Harfleri Diz",learnS:"💬 Cümle Öğren",quizS:"🗣️ Cümle Bul",order:"🧩 Cümleyi Diz"};
+let mode="learn",cur=null,idx=0;
+function tabs(){const t=document.getElementById("tabs");t.innerHTML="";
+  for(const m in modes){const b=document.createElement("button");b.textContent=modes[m];b.className=m==mode?"on":"";b.onclick=()=>{mode=m;tabs();next()};t.append(b)}}
+function next(){const m=document.getElementById("main");
+  if(mode=="learn")return learn(m);if(mode=="learnS")return learnS(m);if(mode=="quizS"||mode=="order"){let v;do{v=pickS()}while(v===cur);cur=v;return mode=="order"?order(m,v):quizS(m,v)}
+  let w;do{w=pick()}while(w===cur&&W.length>1);cur=w;
+  ({quiz,listen,spell})[mode](m,w)}
+function learn(m){const w=W[idx%W.length];cur=w;
+  m.innerHTML=`<div class="emoji">${w[2]}</div><div class="en">${w[0]}</div><div class="ok">okunuş: ${w[3]}</div><div class="tr">${w[1]}</div>
+  <button class="big" id="s">🔊 Dinle</button><br><button class="big alt" id="p">◀</button><button class="big" id="n">Sonraki ▶</button>`;
+  m.querySelector("#s").onclick=()=>speak(w[0]);
+  m.querySelector("#n").onclick=()=>{idx++;learn(m);speak(W[idx%W.length][0])};
+  m.querySelector("#p").onclick=()=>{idx=(idx+W.length-1)%W.length;learn(m)};
+  speak(w[0])}
+function choices(w,L=W){return shuf([w,...shuf(L.filter(x=>x!==w)).slice(0,3)])}
+function ask(m,w,head,fn,label,L){
+  m.innerHTML=`${head}<div class="opts"></div><div class="msg" id="msg"></div>`;
+  const o=m.querySelector(".opts");let done=false;
+  choices(w,L).forEach(c=>{const b=document.createElement("button");b.innerHTML=label(c);
+    b.onclick=()=>{if(done)return;
+      if(c===w){done=true;b.className="right";bump(w,1);speak(w[0]);
+        m.querySelector("#msg").textContent="🎉 Harika! "+w[0]+" = "+w[1];setTimeout(next,1800)}
+      else{b.className="wrong";bump(w,0);m.querySelector("#msg").textContent="Tekrar dene 💪"}};
+    o.append(b)})}
+function quiz(m,w){ask(m,w,`<div class="emoji">${w[2]}</div><div class="tr">Bu İngilizce ne?</div>`,0,c=>c[0])}
+function listen(m,w){ask(m,w,`<button class="big" id="s">🔊 Dinle</button><div class="tr">Duyduğun kelimenin resmini seç</div>`,0,c=>`<span style="font-size:44px">${c[2]}</span>`);
+  m.querySelector("#s").onclick=()=>speak(w[0]);setTimeout(()=>speak(w[0]),300)}
+function spell(m,w){const L=w[0].toUpperCase().split("");let pos=0;
+  m.innerHTML=`<div class="emoji">${w[2]}</div><div class="tr">${w[1]} <button class="big alt" id="s" style="padding:4px 10px">🔊</button></div>
+  <div class="slots">${L.map(()=>'<div class="slot"></div>').join("")}</div><div class="tiles"></div><div class="msg" id="msg"></div>`;
+  const sl=m.querySelectorAll(".slot"),T=m.querySelector(".tiles");
+  m.querySelector("#s").onclick=()=>speak(w[0]);speak(w[0]);let miss=0;
+  shuf(L.map((c,i)=>[c,i])).forEach(([c])=>{const b=document.createElement("button");b.className="tile";b.textContent=c;
+    b.onclick=()=>{if(b.classList.contains("used"))return;
+      if(c===L[pos]){sl[pos].textContent=c;b.classList.add("used");pos++;
+        if(pos==L.length){bump(w,miss==0);speak(w[0]);m.querySelector("#msg").textContent="🎉 Süper! "+w[0];setTimeout(next,1800)}}
+      else{miss++;b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),300)}};
+    T.append(b)})}
+let idxS=0;
+function pickS(){const pool=[];S.forEach(w=>{for(let i=0;i<4-lv(w);i++)pool.push(w)});return pool[Math.random()*pool.length|0]}
+function learnS(m){const w=S[idxS%S.length];cur=w;m.innerHTML=`<div class="emoji">💬</div><div class="en" style="font-size:28px">${w[0]}</div><div class="ok">okunuş: ${w[2]}</div><div class="tr">${w[1]}</div><button class="big" id="s">🔊 Dinle</button><br><button class="big alt" id="p">◀</button><button class="big" id="n">Sonraki ▶</button>`;m.querySelector('#s').onclick=()=>speak(w[0]);m.querySelector('#n').onclick=()=>{idxS++;learnS(m)};m.querySelector('#p').onclick=()=>{idxS=(idxS+S.length-1)%S.length;learnS(m)};speak(w[0])}
+function quizS(m,w){ask(m,w,`<button class="big" id="s">🔊 Dinle</button><div class="tr" style="font-size:24px">${w[1]}</div><div class="tr">İngilizcesi hangisi?</div>`,0,c=>c[0],S);m.querySelector('.opts').classList.add('long');m.querySelector('#s').onclick=()=>speak(w[0])}
+function order(m,w){const T=w[0].split(' ');let pos=0,miss=0;m.innerHTML=`<div class="tr" style="font-size:24px">${w[1]}</div><button class="big alt" id="s">🔊</button><div class="en" id="ans" style="font-size:26px;min-height:44px;border-bottom:4px solid var(--pri)"></div><div class="tiles"></div><div class="msg" id="msg"></div>`;const a=m.querySelector('#ans'),t=m.querySelector('.tiles');m.querySelector('#s').onclick=()=>speak(w[0]);shuf(T).forEach(x=>{const b=document.createElement('button');b.className='tile';b.style.width='auto';b.style.padding='0 12px';b.textContent=x;b.onclick=()=>{if(b.classList.contains('used'))return;if(x===T[pos]){a.textContent+=(pos?' ':'')+x;b.classList.add('used');pos++;if(pos==T.length){bump(w,miss==0);speak(w[0]);m.querySelector('#msg').textContent='🎉 Mükemmel!';setTimeout(next,2000)}}else{miss++;b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),300)}};t.append(b)})}
+tabs();stats();next();
+</script></body></html>
